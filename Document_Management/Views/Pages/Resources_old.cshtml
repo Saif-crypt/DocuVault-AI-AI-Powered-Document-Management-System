@@ -1,0 +1,679 @@
+@{
+    ViewData["Title"] = "Resources";
+}
+
+<style>
+    :root {
+        --primary: #4F46E5;
+        --primary-dark: #4338CA;
+        --primary-light: #818CF8;
+        --secondary: #06B6D4;
+        --success: #10B981;
+        --warning: #F59E0B;
+        --danger: #EF4444;
+        --dark: #1F2937;
+        --light: #F9FAFB;
+        --white: #FFFFFF;
+    }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .resources-hero {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 4rem 0 3rem;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .resources-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/></svg>');
+        background-size: 50px 50px;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 0 2rem;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.95;
+        margin-bottom: 2rem;
+    }
+
+    .breadcrumb-custom {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
+
+    .breadcrumb-custom a {
+        color: rgba(255,255,255,0.8);
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .breadcrumb-custom a:hover {
+        color: white;
+    }
+
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem 4rem;
+    }
+
+    .section-card {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .section-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--primary), var(--secondary));
+    }
+
+    .section-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--light);
+    }
+
+    .section-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.8rem;
+        flex-shrink: 0;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .info-box {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 1.5rem;
+        border-radius: 15px;
+        border-left: 4px solid var(--primary);
+        transition: all 0.3s;
+    }
+
+    .info-box:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .info-box h4 {
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-box p {
+        color: var(--dark);
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .feature-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .feature-list li {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background: var(--light);
+        border-radius: 10px;
+        display: flex;
+        align-items: start;
+        gap: 15px;
+        transition: all 0.3s;
+    }
+
+    .feature-list li:hover {
+        background: #EEF2FF;
+        transform: translateX(10px);
+    }
+
+    .feature-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--primary);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .feature-content strong {
+        color: var(--primary);
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .tech-stack-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .tech-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        border: 2px solid var(--light);
+        transition: all 0.3s;
+    }
+
+    .tech-card:hover {
+        border-color: var(--primary);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(79, 70, 229, 0.2);
+    }
+
+    .tech-card i {
+        font-size: 3rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+
+    .tech-card h5 {
+        margin: 0;
+        color: var(--dark);
+        font-weight: 600;
+    }
+
+    .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .status-item {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        border: 2px solid #D1FAE5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: all 0.3s;
+    }
+
+    .status-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+    }
+
+    .status-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--success), #34D399);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .status-label {
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .status-badge {
+        background: var(--success);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .faq-item {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--primary);
+        transition: all 0.3s;
+    }
+
+    .faq-item:hover {
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transform: translateX(5px);
+    }
+
+    .faq-question {
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .faq-answer {
+        color: #4B5563;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .contact-card {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.3s;
+    }
+
+    .contact-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 10px 40px rgba(79, 70, 229, 0.3);
+    }
+
+    .contact-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .academic-banner {
+        background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+        border-left: 5px solid var(--warning);
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 2rem 0;
+        display: flex;
+        align-items: start;
+        gap: 15px;
+    }
+
+    .academic-banner i {
+        font-size: 2rem;
+        color: var(--warning);
+    }
+
+    .academic-banner strong {
+        color: #92400E;
+    }
+
+    @@media (max-width: 768px) {
+        .hero-title {
+            font-size: 2rem;
+        }
+        .section-card {
+            padding: 2rem 1.5rem;
+        }
+        .info-grid, .tech-stack-grid, .status-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="resources-hero">
+    <div class="hero-content">
+        <h1 class="hero-title">📚 Resources Hub</h1>
+        <p class="hero-subtitle">
+            Your comprehensive guide to DocuVault AI — documentation, support, FAQs, and system status
+        </p>
+        <div class="breadcrumb-custom">
+            <a asp-controller="Home" asp-action="Index"><i class="bi bi-house-door"></i> Home</a>
+            <i class="bi bi-chevron-right"></i>
+            <span>Resources</span>
+        </div>
+    </div>
+</div>
+
+<div class="main-container">
+
+    <!-- Documentation Section -->
+    <div class="section-card" id="documentation">
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="bi bi-book"></i>
+            </div>
+            <h2 class="section-title">Documentation</h2>
+        </div>
+
+        <div class="academic-banner">
+            <i class="bi bi-mortarboard-fill"></i>
+            <div>
+                <strong>Academic Project:</strong> This system is developed as a Final Year Major Project demonstrating AI-powered document management using OCR, NLP, and Machine Learning.
+            </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">Getting Started</h3>
+        <ul class="feature-list">
+            <li>
+                <div class="feature-icon"><i class="bi bi-person-plus"></i></div>
+                <div class="feature-content">
+                    <strong>Account Registration</strong>
+                    Click "Get Started" on the home page to create your account. Use a valid email address and a secure password.
+                </div>
+            </li>
+            <li>
+                <div class="feature-icon"><i class="bi bi-cloud-upload"></i></div>
+                <div class="feature-content">
+                    <strong>Uploading Documents</strong>
+                    Navigate to "My Documents" and click the upload button. Select files from your computer to process.
+                </div>
+            </li>
+            <li>
+                <div class="feature-icon"><i class="bi bi-file-earmark-text"></i></div>
+                <div class="feature-content">
+                    <strong>Supported Formats</strong>
+                    PNG, JPG, JPEG, BMP, TIFF (images) and PDF, DOCX (documents) are supported for OCR processing.
+                </div>
+            </li>
+            <li>
+                <div class="feature-icon"><i class="bi bi-cpu"></i></div>
+                <div class="feature-content">
+                    <strong>OCR Processing</strong>
+                    Documents are automatically processed using Tesseract OCR engine with intelligent preprocessing for maximum accuracy.
+                </div>
+            </li>
+        </ul>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">Technical Stack</h3>
+        <div class="tech-stack-grid">
+            <div class="tech-card">
+                <i class="bi bi-code-square"></i>
+                <h5>ASP.NET Core MVC</h5>
+            </div>
+            <div class="tech-card">
+                <i class="bi bi-python"></i>
+                <h5>Python</h5>
+            </div>
+            <div class="tech-card">
+                <i class="bi bi-eye"></i>
+                <h5>Tesseract OCR</h5>
+            </div>
+            <div class="tech-card">
+                <i class="bi bi-database"></i>
+                <h5>SQL Database</h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Section -->
+    <div class="section-card" id="support">
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="bi bi-life-preserver"></i>
+            </div>
+            <h2 class="section-title">Support</h2>
+        </div>
+
+        <p style="color: #6B7280; margin-bottom: 2rem; font-size: 1.1rem;">
+            Need assistance? We're here to help you with any questions or issues you may encounter.
+        </p>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">Contact Information</h3>
+        <div class="info-grid">
+            <div class="contact-card">
+                <div class="contact-icon"><i class="bi bi-envelope-fill"></i></div>
+                <div>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">Email</div>
+                    <strong style="font-size: 1.1rem;">support@docuvault.ai</strong>
+                </div>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon"><i class="bi bi-telephone-fill"></i></div>
+                <div>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">Phone</div>
+                    <strong style="font-size: 1.1rem;">+91 98765 43210</strong>
+                </div>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                <div>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">Location</div>
+                    <strong style="font-size: 1.1rem;">New Delhi, India</strong>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">Common Issues & Solutions</h3>
+        <div class="info-grid">
+            <div class="info-box">
+                <h4><i class="bi bi-x-circle"></i> Upload Failures</h4>
+                <p>Ensure file size is under 10MB and format is supported (PNG, JPG, PDF, DOCX).</p>
+            </div>
+            <div class="info-box">
+                <h4><i class="bi bi-lock"></i> Login Problems</h4>
+                <p>Use the "Forgot Password" option if you've forgotten your credentials.</p>
+            </div>
+            <div class="info-box">
+                <h4><i class="bi bi-search"></i> OCR Accuracy</h4>
+                <p>For best results, use high-quality scans at 300 DPI or higher resolution.</p>
+            </div>
+            <div class="info-box">
+                <h4><i class="bi bi-browser-chrome"></i> Browser Support</h4>
+                <p>Works best on Chrome, Firefox, Edge, and Safari (latest versions).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="section-card" id="faq">
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="bi bi-question-circle"></i>
+            </div>
+            <h2 class="section-title">Frequently Asked Questions</h2>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="bi bi-patch-question"></i>
+                What is DocuVault AI?
+            </div>
+            <p class="faq-answer">
+                DocuVault AI is an intelligent document management system that uses OCR (Optical Character Recognition) 
+                to extract text from scanned documents, images, and PDFs. It's built using ASP.NET Core and Python for academic demonstration.
+            </p>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="bi bi-patch-question"></i>
+                What file formats are supported?
+            </div>
+            <p class="faq-answer">
+                <strong>Images:</strong> PNG, JPG, JPEG, BMP, TIFF<br>
+                <strong>Documents:</strong> PDF, DOCX
+            </p>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="bi bi-patch-question"></i>
+                How accurate is the OCR?
+            </div>
+            <p class="faq-answer">
+                OCR accuracy depends on document quality. For printed text with good resolution (300 DPI+), 
+                accuracy is typically high. Handwritten text and low-quality scans may have lower accuracy.
+            </p>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="bi bi-patch-question"></i>
+                Is my data secure?
+            </div>
+            <p class="faq-answer">
+                Yes. All documents are stored securely with authentication-based access control. 
+                Only you can access your uploaded documents. Passwords are hashed and never stored in plain text.
+            </p>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="bi bi-patch-question"></i>
+                Can I delete my documents?
+            </div>
+            <p class="faq-answer">
+                Yes. You have full control over your documents. You can view, download, or delete them 
+                at any time from your dashboard.
+            </p>
+        </div>
+    </div>
+
+    <!-- Status Section -->
+    <div class="section-card" id="status">
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="bi bi-activity"></i>
+            </div>
+            <h2 class="section-title">System Status</h2>
+        </div>
+
+        <p style="color: #6B7280; margin-bottom: 2rem; font-size: 1.1rem;">
+            Current operational status of all DocuVault AI services.
+        </p>
+
+        <div class="status-grid">
+            <div class="status-item">
+                <div class="status-icon">
+                    <i class="bi bi-globe"></i>
+                </div>
+                <div class="status-label">Web Application</div>
+                <div class="status-badge">
+                    <i class="bi bi-check-circle-fill"></i> Operational
+                </div>
+            </div>
+            <div class="status-item">
+                <div class="status-icon">
+                    <i class="bi bi-cpu"></i>
+                </div>
+                <div class="status-label">OCR Engine</div>
+                <div class="status-badge">
+                    <i class="bi bi-check-circle-fill"></i> Operational
+                </div>
+            </div>
+            <div class="status-item">
+                <div class="status-icon">
+                    <i class="bi bi-database"></i>
+                </div>
+                <div class="status-label">Database</div>
+                <div class="status-badge">
+                    <i class="bi bi-check-circle-fill"></i> Operational
+                </div>
+            </div>
+            <div class="status-item">
+                <div class="status-icon">
+                    <i class="bi bi-hdd"></i>
+                </div>
+                <div class="status-label">File Storage</div>
+                <div class="status-badge">
+                    <i class="bi bi-check-circle-fill"></i> Operational
+                </div>
+            </div>
+        </div>
+
+        <div class="info-grid" style="margin-top: 3rem;">
+            <div class="info-box">
+                <h4><i class="bi bi-info-circle"></i> Version</h4>
+                <p>1.0.0 (Final Year Project)</p>
+            </div>
+            <div class="info-box">
+                <h4><i class="bi bi-calendar-check"></i> Last Updated</h4>
+                <p>February 2025</p>
+            </div>
+            <div class="info-box">
+                <h4><i class="bi bi-code-slash"></i> Framework</h4>
+                <p>ASP.NET Core 8.0</p>
+            </div>
+            <div class="info-box">
+                <h4><i class="bi bi-eye"></i> OCR Engine</h4>
+                <p>Tesseract 5.x</p>
+            </div>
+        </div>
+    </div>
+
+</div>

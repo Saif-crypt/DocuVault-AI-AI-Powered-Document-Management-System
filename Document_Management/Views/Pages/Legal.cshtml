@@ -1,0 +1,630 @@
+@{
+    ViewData["Title"] = "Legal";
+}
+
+<style>
+    :root {
+        --primary: #4F46E5;
+        --primary-dark: #4338CA;
+        --secondary: #06B6D4;
+        --success: #10B981;
+        --warning: #F59E0B;
+        --dark: #1F2937;
+        --text-dark: #1F2937;
+        --text-gray: #4B5563;
+        --light: #F9FAFB;
+    }
+
+    body {
+        background: #F3F4F6;
+        min-height: 100vh;
+    }
+
+    .legal-hero {
+        background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+        color: white;
+        padding: 4rem 0 3rem;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .legal-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="30" r="2" fill="white" opacity="0.05"/></svg>');
+        background-size: 60px 60px;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 0 2rem;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+    }
+
+    .breadcrumb-custom {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
+
+    .breadcrumb-custom a {
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .breadcrumb-custom a:hover {
+        color: white;
+    }
+
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem 4rem;
+    }
+
+    .academic-alert {
+        background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+        border: 2px solid var(--warning);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        display: flex;
+        align-items: start;
+        gap: 20px;
+        box-shadow: 0 10px 30px rgba(245, 158, 11, 0.2);
+    }
+
+    .academic-alert-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--warning);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        flex-shrink: 0;
+    }
+
+    .academic-alert-content strong {
+        color: #92400E;
+        font-size: 1.2rem;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .academic-alert-content p {
+        color: #78350F;
+        margin: 0;
+        line-height: 1.6;
+        font-weight: 500;
+    }
+
+    .legal-card {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s;
+    }
+
+    .legal-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .legal-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 3px solid var(--light);
+    }
+
+    .card-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        flex-shrink: 0;
+        box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+    }
+
+    .card-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .update-badge {
+        background: var(--light);
+        color: var(--text-dark);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-bottom: 2rem;
+    }
+
+    .content-section {
+        margin-bottom: 2.5rem;
+    }
+
+    .content-section h3 {
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .content-section h3::before {
+        content: '';
+        width: 4px;
+        height: 24px;
+        background: linear-gradient(180deg, var(--primary), var(--secondary));
+        border-radius: 2px;
+    }
+
+    .content-section p {
+        color: var(--text-gray);
+        line-height: 1.8;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+
+    .info-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .info-list li {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background: var(--light);
+        border-radius: 12px;
+        border-left: 4px solid var(--primary);
+        transition: all 0.3s;
+        display: flex;
+        align-items: start;
+        gap: 12px;
+    }
+
+    .info-list li:hover {
+        background: #EEF2FF;
+        transform: translateX(10px);
+    }
+
+    .info-list li i {
+        color: var(--primary);
+        font-size: 1.2rem;
+        margin-top: 2px;
+    }
+
+    .info-list li strong {
+        color: var(--primary);
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .info-list li div {
+        color: var(--text-gray);
+        font-weight: 500;
+    }
+
+    .highlight-box {
+        background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+        border-left: 5px solid var(--primary);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1.5rem 0;
+    }
+
+    .highlight-box strong {
+        color: var(--primary);
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .highlight-box {
+        color: var(--text-gray);
+        font-weight: 500;
+    }
+
+    .security-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .security-item {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        border: 2px solid var(--light);
+        transition: all 0.3s;
+        text-align: center;
+    }
+
+    .security-item:hover {
+        border-color: var(--primary);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(79, 70, 229, 0.15);
+    }
+
+    .security-icon-box {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin: 0 auto 1rem;
+    }
+
+    .security-item h4 {
+        color: var(--text-dark);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .security-item p {
+        color: var(--text-gray);
+        font-size: 0.9rem;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    @@media (max-width: 768px) {
+        .hero-title {
+            font-size: 2rem;
+        }
+        .legal-card {
+            padding: 2rem 1.5rem;
+        }
+        .security-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="legal-hero">
+    <div class="hero-content">
+        <h1 class="hero-title">
+            <i class="bi bi-shield-check"></i>
+            Legal Information
+        </h1>
+        <p class="hero-subtitle">
+            Privacy, terms, cookies, and security policies for DocuVault AI
+        </p>
+        <div class="breadcrumb-custom">
+            <a asp-controller="Home" asp-action="Index"><i class="bi bi-house-door"></i> Home</a>
+            <i class="bi bi-chevron-right"></i>
+            <span>Legal</span>
+        </div>
+    </div>
+</div>
+
+<div class="main-container">
+
+    <!-- Academic Notice -->
+    <div class="academic-alert">
+        <div class="academic-alert-icon">
+            <i class="bi bi-mortarboard-fill"></i>
+        </div>
+        <div class="academic-alert-content">
+            <strong>Academic Project Disclaimer</strong>
+            <p>
+                This is a Final Year Major Project developed for educational and demonstration purposes. 
+                The following policies are generic templates created for academic evaluation and are not intended for commercial use.
+            </p>
+        </div>
+    </div>
+
+    <!-- Privacy Policy -->
+    <div class="legal-card" id="privacy">
+        <div class="card-header">
+            <div class="card-icon">
+                <i class="bi bi-shield-lock"></i>
+            </div>
+            <h2 class="card-title">Privacy Policy</h2>
+        </div>
+
+        <div class="update-badge">
+            <i class="bi bi-calendar-check"></i> Last Updated: February 2025
+        </div>
+
+        <div class="content-section">
+            <h3>1. Information We Collect</h3>
+            <p>DocuVault AI collects the following types of information:</p>
+            <ul class="info-list">
+                <li>
+                    <i class="bi bi-person-badge"></i>
+                    <div>
+                        <strong>Account Information</strong>
+                        Email address, name, and encrypted password for authentication purposes.
+                    </div>
+                </li>
+                <li>
+                    <i class="bi bi-file-earmark"></i>
+                    <div>
+                        <strong>Document Data</strong>
+                        Uploaded files, metadata (filename, size, type), and extracted OCR text.
+                    </div>
+                </li>
+                <li>
+                    <i class="bi bi-graph-up"></i>
+                    <div>
+                        <strong>Usage Information</strong>
+                        Login timestamps, document access logs, and system interaction data.
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h3>2. How We Use Your Information</h3>
+            <div class="highlight-box">
+                <strong>Primary Uses:</strong>
+                Provide document management services, maintain security, improve functionality, and demonstrate AI capabilities for academic evaluation.
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>3. Data Sharing & Privacy</h3>
+            <ul class="info-list">
+                <li>
+                    <i class="bi bi-x-circle"></i>
+                    <div><strong>Not shared</strong> with third parties</div>
+                </li>
+                <li>
+                    <i class="bi bi-x-circle"></i>
+                    <div><strong>Not sold</strong> or monetized in any way</div>
+                </li>
+                <li>
+                    <i class="bi bi-check-circle"></i>
+                    <div><strong>Used only</strong> for project demonstration and evaluation</div>
+                </li>
+                <li>
+                    <i class="bi bi-people"></i>
+                    <div><strong>Accessible only</strong> to project team and academic evaluators</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Terms of Service -->
+    <div class="legal-card" id="terms">
+        <div class="card-header">
+            <div class="card-icon">
+                <i class="bi bi-file-text"></i>
+            </div>
+            <h2 class="card-title">Terms of Service</h2>
+        </div>
+
+        <div class="update-badge">
+            <i class="bi bi-calendar-check"></i> Last Updated: February 2025
+        </div>
+
+        <div class="content-section">
+            <h3>1. Acceptance of Terms</h3>
+            <p>
+                By accessing DocuVault AI, you agree to these Terms of Service. This platform is provided 
+                "as-is" for academic demonstration purposes.
+            </p>
+        </div>
+
+        <div class="content-section">
+            <h3>2. Service Description</h3>
+            <ul class="info-list">
+                <li>
+                    <i class="bi bi-cloud-upload"></i>
+                    <div><strong>Document Upload:</strong> Secure file upload and storage</div>
+                </li>
+                <li>
+                    <i class="bi bi-eye"></i>
+                    <div><strong>OCR Processing:</strong> Text extraction from documents</div>
+                </li>
+                <li>
+                    <i class="bi bi-folder"></i>
+                    <div><strong>Management:</strong> View, download, and delete your documents</div>
+                </li>
+                <li>
+                    <i class="bi bi-shield-check"></i>
+                    <div><strong>Authentication:</strong> Secure user access control</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h3>3. User Obligations</h3>
+            <div class="highlight-box">
+                <strong>You agree to:</strong>
+                Provide accurate information, maintain password security, use service lawfully, and not upload malicious content or attempt to compromise system security.
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Policy -->
+    <div class="legal-card" id="cookies">
+        <div class="card-header">
+            <div class="card-icon">
+                <i class="bi bi-cookie"></i>
+            </div>
+            <h2 class="card-title">Cookie Policy</h2>
+        </div>
+
+        <div class="update-badge">
+            <i class="bi bi-calendar-check"></i> Last Updated: February 2025
+        </div>
+
+        <div class="content-section">
+            <h3>1. What Are Cookies?</h3>
+            <p>
+                Cookies are small text files stored on your device to remember preferences and improve user experience.
+            </p>
+        </div>
+
+        <div class="content-section">
+            <h3>2. Cookies We Use</h3>
+            <ul class="info-list">
+                <li>
+                    <i class="bi bi-key"></i>
+                    <div>
+                        <strong>Essential Cookies</strong>
+                        Required for login, authentication, and session management.
+                    </div>
+                </li>
+                <li>
+                    <i class="bi bi-sliders"></i>
+                    <div>
+                        <strong>Functional Cookies</strong>
+                        Remember your preferences and settings.
+                    </div>
+                </li>
+                <li>
+                    <i class="bi bi-shield"></i>
+                    <div>
+                        <strong>Security Cookies</strong>
+                        Protect against unauthorized access and CSRF attacks.
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="highlight-box">
+            <strong>Cookie Duration:</strong>
+            Most cookies expire after 7 days or when you close your browser, depending on your "Remember Me" selection.
+        </div>
+    </div>
+
+    <!-- Data Security -->
+    <div class="legal-card" id="security">
+        <div class="card-header">
+            <div class="card-icon">
+                <i class="bi bi-shield-fill-check"></i>
+            </div>
+            <h2 class="card-title">Data Security</h2>
+        </div>
+
+        <div class="update-badge">
+            <i class="bi bi-calendar-check"></i> Last Updated: February 2025
+        </div>
+
+        <div class="content-section">
+            <h3>Security Measures</h3>
+            <div class="security-grid">
+                <div class="security-item">
+                    <div class="security-icon-box">
+                        <i class="bi bi-lock"></i>
+                    </div>
+                    <h4>Encryption</h4>
+                    <p>Passwords hashed with industry-standard algorithms</p>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon-box">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4>HTTPS/SSL</h4>
+                    <p>All data transmission encrypted via TLS</p>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon-box">
+                        <i class="bi bi-person-check"></i>
+                    </div>
+                    <h4>Authentication</h4>
+                    <p>Cookie-based secure user management</p>
+                </div>
+                <div class="security-item">
+                    <div class="security-icon-box">
+                        <i class="bi bi-file-lock"></i>
+                    </div>
+                    <h4>Access Control</h4>
+                    <p>Users can only access their own documents</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>File Storage Security</h3>
+            <ul class="info-list">
+                <li>
+                    <i class="bi bi-server"></i>
+                    <div>Stored on secure server with restricted access</div>
+                </li>
+                <li>
+                    <i class="bi bi-key"></i>
+                    <div>Associated with user accounts via unique identifiers</div>
+                </li>
+                <li>
+                    <i class="bi bi-lock"></i>
+                    <div>Accessible only to authenticated document owners</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="highlight-box">
+            <strong>Academic Context:</strong>
+            This security implementation is designed for academic demonstration. Not intended for production use with sensitive data.
+        </div>
+    </div>
+
+</div>
