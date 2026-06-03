@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AI-Powered Intelligent Document Management System</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+
+@{
+    string firstLetter = "U";
+    if (User.Identity != null && User.Identity.IsAuthenticated && User.Identity.Name != null && User.Identity.Name.Length > 0)
+    {
+        firstLetter = User.Identity.Name[0].ToString().ToUpper();
+    }
+}
+
+<style>
+    /* Navigation Styles */
+    .main-nav {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        padding: 1rem 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .nav-brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    .nav-link {
+        color: #94a3b8;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s;
+    }
+
+    .nav-link:hover {
+        color: #ffffff;
+    }
+
+    .nav-link.active {
+        color: #4F46E5;
+    }
+
+    .logout-btn {
+        padding: 0.5rem 1.5rem;
+        background: #4F46E5;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .logout-btn:hover {
+        background: #4338CA;
+        transform: translateY(-2px);
+    }
+</style>
+
+<!-- Navigation HTML -->
+<nav class="main-nav">
+    <div class="nav-container">
+        @* <a href="/" class="nav-brand">DocuVault AI</a> *@
+            <!-- LOGO -->
+        <a href="/Document/Index" class="nav-logo">
+                <div class="logo-icon">
+                    <i class="bi bi-shield-fill-check"></i>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-name">DocuVault</span>
+                    <span class="logo-tag">AI</span>
+                </div>
+            </a>
+        
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div class="nav-links">
+                <a href="/Home/Dashboard" class="nav-link">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a href="/Document/Index" class="nav-link">
+                    <i class="bi bi-folder"></i> My Documents
+                </a>
+                <a href="/Document/Upload" class="nav-link">
+                    <i class="bi bi-cloud-upload"></i> Upload
+                </a>
+                <a href="/Account/Profile" class="nav-link">
+                    <i class="bi bi-person"></i> Profile
+                </a>
+                <form asp-controller="Account" asp-action="Logout" method="post" style="display: inline;">
+                    <button type="submit" class="logout-btn">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div class="nav-links">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/Account/Login" class="nav-link">Login</a>
+                <a href="/Account/Register" class="nav-link">Register</a>
+            </div>
+        }
+    </div>
+</nav>
+
+    @* <!-- ===== NAVBAR ===== -->
+    <nav class="navbar-main" id="mainNavbar">
+        <div class="nav-container">
+
+            <!-- LOGO -->
+            <a href="/Document/Index" class="nav-logo">
+                <div class="logo-icon">
+                    <i class="bi bi-shield-fill-check"></i>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-name">DocuVault</span>
+                    <span class="logo-tag">AI</span>
+                </div>
+            </a>
+
+            <!-- DESKTOP LINKS -->
+            <ul class="nav-links" id="navLinks">
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <li><a href="/Document/Index" class="nav-link-item"><i class="bi bi-folder2-open"></i> My Documents</a></li>
+                    <li><a href="/Document/Upload" class="nav-link-item"><i class="bi bi-cloud-upload"></i> Upload</a></li>
+                }
+            </ul>
+
+            <!-- DESKTOP USER AREA -->
+            <div class="nav-user-area" id="navUserArea">
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <div class="nav-user-info">
+                        <div class="nav-avatar">
+                            <span>@firstLetter</span>
+                        </div>
+                        <div class="nav-user-details">
+                            <span class="nav-user-name">@User.Identity.Name</span>
+                            <form action="/Account/Logout" method="post" style="display: inline; margin: 0;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="nav-logout-btn">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="nav-auth-buttons">
+                        <a href="/Account/Login" class="nav-btn-login">Login</a>
+                        <a href="/Account/Register" class="nav-btn-register">Get Started</a>
+                    </div>
+                }
+            </div>
+
+            <!-- HAMBURGER BUTTON -->
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle Menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </div>
+    </nav> *@
+
+    <!-- ===== MOBILE MENU OVERLAY ===== -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- ===== MOBILE MENU ===== -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <div class="mobile-logo">
+                <div class="logo-icon">
+                    <i class="bi bi-shield-fill-check"></i>
+                </div>
+                <span class="logo-name">DocuVault <span class="logo-tag">AI</span></span>
+            </div>
+            <button class="mobile-close-btn" id="mobileCloseBtn">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <div class="mobile-user-card">
+                <div class="mobile-avatar">
+                    <span>@firstLetter</span>
+                </div>
+                <div class="mobile-user-info">
+                    <span class="mobile-user-name">@User.Identity.Name</span>
+                    <span class="mobile-user-email">Logged in</span>
+                </div>
+            </div>
+        }
+
+        <ul class="mobile-nav-links">
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <li>
+                    <a href="/Document/Index" class="mobile-nav-link">
+                        <i class="bi bi-folder2-open"></i>
+                        <span>My Documents</span>
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="/Document/Upload" class="mobile-nav-link">
+                        <i class="bi bi-cloud-upload"></i>
+                        <span>Upload File</span>
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                <li>
+                    <form action="/Account/Logout" method="post" style="margin: 0;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="mobile-nav-link mobile-logout">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Logout</span>
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </form>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <a href="/Account/Login" class="mobile-nav-link">
+                        <i class="bi bi-person-circle"></i>
+                        <span>Login</span>
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="/Account/Register" class="mobile-nav-link">
+                        <i class="bi bi-person-plus"></i>
+                        <span>Get Started</span>
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            }
+        </ul>
+
+        <div class="mobile-menu-footer">
+            <p>DocuVault AI &copy; @DateTime.Now.Year</p>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+        @RenderBody()
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer-main">
+        <div class="footer-top">
+            <div class="container">
+                <div class="row">
+
+                    <!-- Brand Column -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="footer-brand">
+                            <div class="footer-logo">
+                                <div class="logo-icon">
+                                    <i class="bi bi-shield-fill-check"></i>
+                                </div>
+                                <span class="logo-name">DocuVault <span class="logo-tag">AI</span></span>
+                            </div>
+                            <p class="footer-desc">
+                                AI-Powered Intelligent Document Management System using NLP & OCR. Store, analyze, and unlock insights from your documents effortlessly.
+                            </p>
+                            <div class="footer-social">
+                                <a href="https://facebook.com" target="_blank" class="social-icon" title="Facebook"><i class="bi bi-facebook"></i></a>
+                                <a href="https://twitter.com" target="_blank" class="social-icon" title="Twitter"><i class="bi bi-twitter-x"></i></a>
+                                <a href="https://instagram.com" target="_blank" class="social-icon" title="Instagram"><i class="bi bi-instagram"></i></a>
+                                <a href="https://linkedin.com" target="_blank" class="social-icon" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                                <a href="https://wa.me/919876543210" target="_blank" class="social-icon" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <h6 class="footer-heading">Quick Links</h6>
+                        <ul class="footer-links">
+                            <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                            <li><a asp-controller="Pages" asp-action="Resources">Features</a></li>
+                            <li><a asp-controller="Pages" asp-action="Resources" asp-fragment="documentation">About Us</a></li>
+                            <li><a asp-controller="Pages" asp-action="Resources">Pricing</a></li>
+                            <li><a asp-controller="Pages" asp-action="Resources">Blog</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Resources -->
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <h6 class="footer-heading">Resources</h6>
+                        <ul class="footer-links">
+                            <li><a asp-controller="Pages" asp-action="Resources" asp-fragment="documentation">Documentation</a></li>
+                            <li><a asp-controller="Pages" asp-action="Resources" asp-fragment="support">Support</a></li>
+                            <li><a asp-controller="Pages" asp-action="Resources" asp-fragment="faq">FAQ</a></li>
+                            <li><a asp-controller="Pages" asp-action="Resources" asp-fragment="status">Status</a></li>
+                            <li><a asp-controller="Pages" asp-action="Resources" asp-fragment="faq">Community</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Legal -->
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <h6 class="footer-heading">Legal</h6>
+                        <ul class="footer-links">
+                            <li><a asp-controller="Pages" asp-action="Legal" asp-fragment="privacy">Privacy Policy</a></li>
+                            <li><a asp-controller="Pages" asp-action="Legal" asp-fragment="terms">Terms of Service</a></li>
+                            <li><a asp-controller="Pages" asp-action="Legal" asp-fragment="cookies">Cookie Policy</a></li>
+                            <li><a asp-controller="Pages" asp-action="Legal" asp-fragment="security">Data Security</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact -->
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <h6 class="footer-heading">Contact Us</h6>
+                        <ul class="footer-links footer-contact">
+                            <li>
+                                <i class="bi bi-envelope"></i>
+                                <a href="mailto:support@docuvault.ai">support@docuvault.ai</a>
+                            </li>
+                            <li>
+                                <i class="bi bi-telephone"></i>
+                                <a href="tel:+919876543210">+91 98765 43210</a>
+                            </li>
+                            <li>
+                                <i class="bi bi-geo-alt"></i>
+                                <span>New Delhi, India</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                        <p class="footer-copy">&copy; @DateTime.Now.Year DocuVault AI. All rights reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <span class="footer-made">Made with <i class="bi bi-heart-fill footer-heart"></i> for smarter document management</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Hamburger Menu JS -->
+    <script>
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        const mobileCloseBtn = document.getElementById('mobileCloseBtn');
+
+        function openMenu() {
+            mobileMenu.classList.add('active');
+            mobileOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            mobileMenu.classList.remove('active');
+            mobileOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        if (hamburgerBtn) {
+            hamburgerBtn.addEventListener('click', openMenu);
+        }
+        
+        if (mobileCloseBtn) {
+            mobileCloseBtn.addEventListener('click', closeMenu);
+        }
+        
+        if (mobileOverlay) {
+            mobileOverlay.addEventListener('click', closeMenu);
+        }
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function () {
+            const navbar = document.getElementById('mainNavbar');
+            if (navbar) {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            }
+        });
+
+        // Prevent body scroll when mobile menu is open
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuElement = document.getElementById('mobileMenu');
+            if (mobileMenuElement) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.attributeName === 'class') {
+                            if (mobileMenuElement.classList.contains('active')) {
+                                document.body.style.overflow = 'hidden';
+                            } else {
+                                document.body.style.overflow = '';
+                            }
+                        }
+                    });
+                });
+                
+                observer.observe(mobileMenuElement, {
+                    attributes: true
+                });
+            }
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+<!-- ALTERNATIVE: Simple Navigation (if you prefer minimal) -->
+<!--
+<nav style="background: #1e293b; padding: 1rem 2rem; color: white;">
+    @* @if (User.Identity?.IsAuthenticated == true)
+    {
+        <a href="/Home/Dashboard">Dashboard</a> |
+        <a href="/Document/Index">My Documents</a> |
+        <a href="/Document/Upload">Upload</a> |
+        <a href="/Account/Profile">Profile</a> |
+        <form asp-controller="Account" asp-action="Logout" method="post" style="display: inline;">
+            <button type="submit">Logout</button>
+        </form>
+    }
+    else
+    {
+        <a href="/">Home</a> |
+        <a href="/Account/Login">Login</a> |
+        <a href="/Account/Register">Register</a>
+    }
+</nav>
+--> *@
