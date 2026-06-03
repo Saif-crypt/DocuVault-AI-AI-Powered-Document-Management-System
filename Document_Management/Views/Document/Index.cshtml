@@ -1,0 +1,631 @@
+@model IEnumerable<DocumentManagementApp.Models.Document>
+
+@{
+    ViewData["Title"] = "My Documents";
+    var searchQuery = Context.Request.Query["search"].ToString();
+}
+
+@* <!DOCTYPE html> *@
+@* <html lang="en"> *@
+@* <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DocuVault AI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" /> *@
+    
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --bg-dark: #1a1f35;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container-main {
+            max-width: 1600px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .btn-upload {
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-upload:hover {
+            background: #4338CA;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(79, 70, 229, 0.4);
+            color: white;
+        }
+
+        /* ✅ NEW: Search Box Styles */
+        .search-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn-search {
+            background: var(--primary);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-search:hover {
+            background: #4338CA;
+            transform: translateY(-2px);
+        }
+
+        .btn-clear {
+            background: #6B7280;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+
+        .btn-clear:hover {
+            background: #4B5563;
+            color: white;
+        }
+
+        .search-info {
+            margin-top: 1rem;
+            color: #6B7280;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-info i {
+            color: #3B82F6;
+        }
+
+        .alert-success {
+            background: #10B981;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .documents-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .table-custom {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .table-custom thead {
+            background: var(--bg-dark);
+            color: white;
+        }
+
+        .table-custom thead th {
+            padding: 1rem;
+            font-weight: 600;
+            border: none;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table-custom tbody tr {
+            transition: all 0.3s;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .table-custom tbody tr:hover {
+            background: #F3F4F6;
+        }
+
+        .table-custom tbody td {
+            padding: 1.25rem 1rem;
+            vertical-align: middle;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .icon-pdf { background: #DC2626; }
+        .icon-docx { background: #2563EB; }
+        .icon-txt { background: #6B7280; }
+        .icon-img { background: #10B981; }
+        .icon-default { background: #8B5CF6; }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        .badge-type {
+            background: #EEF2FF;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-status {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .badge-completed {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge-failed {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .badge-skipped {
+            background: #E5E7EB;
+            color: #6B7280;
+        }
+
+        .btn-action {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .btn-view {
+            background: #EEF2FF;
+            color: var(--primary);
+        }
+
+        .btn-view:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-download {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .btn-download:hover {
+            background: #10B981;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .btn-delete:hover {
+            background: #DC2626;
+            color: white;
+        }
+
+        .btn-text {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .btn-text:hover {
+            background: #3B82F6;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6B7280;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #D1D5DB;
+            margin-bottom: 1rem;
+        }
+
+        /* ✅ NEW: No Results State */
+        .no-results {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #6B7280;
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            color: #FCA5A5;
+            margin-bottom: 1rem;
+        }
+        .btn-summary {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .btn-summary:hover {
+            background: #F59E0B;
+            color: white;
+            }
+
+    </style>
+@* </head> *@
+<body>
+
+    <div class="container-main">
+        
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-folder2-open"></i>
+                My Documents
+            </h1>
+            <a href="/Document/Upload" class="btn-upload">
+                <i class="bi bi-cloud-upload"></i> Upload New
+            </a>
+        </div>
+
+        <!-- Success Message -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert-success">
+                <i class="bi bi-check-circle-fill"></i>
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        <!-- ✅ NEW: Smart Content Search -->
+        <div class="search-container">
+            <form method="get" action="/Document" class="search-form">
+                <input 
+                    type="text" 
+                    name="search" 
+                    class="search-input" 
+                    placeholder="🔍 Search documents by content... (e.g., invoice, resume, decline)" 
+                    value="@searchQuery"
+                    autocomplete="off" />
+                <button type="submit" class="btn-search">
+                    <i class="bi bi-search"></i> Search
+                </button>
+                @if (!string.IsNullOrEmpty(searchQuery))
+                {
+                    <a href="/Document" class="btn-clear">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </a>
+                }
+            </form>
+            <div class="search-info">
+                <i class="bi bi-info-circle"></i>
+                @if (!string.IsNullOrEmpty(searchQuery))
+                {
+                    <span>Showing results for: <strong>"@searchQuery"</strong> (@Model.Count() documents found)</span>
+                }
+                else
+                {
+                    <span>Smart search powered by NLP preprocessing • Searches processed document content</span>
+                }
+            </div>
+        </div>
+
+        <!-- Documents Table -->
+        <div class="documents-card">
+            @if (Model != null && Model.Any())
+            {
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>FILE</th>
+                            <th>TYPE</th>
+                            <th>SIZE</th>
+                            <th>UPLOADED</th>
+                            <th>OCR STATUS</th>
+                            <th>NLP STATUS</th>
+                            <th>AI VIEWS</th>
+                            <th>DESCRIPTION</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var doc in Model)
+                        {
+                            <tr>
+                                <!-- File Info -->
+                                <td>
+                                    <div class="file-info">
+                                        <div class="file-icon @GetIconClass(doc.FileExtension)">
+                                            <i class="bi @GetFileIcon(doc.FileExtension)"></i>
+                                        </div>
+                                        <span class="file-name">@doc.FileName</span>
+                                    </div>
+                                </td>
+
+                                <!-- Type -->
+                                <td>
+                                    <span class="badge-type">@doc.FileExtension?.ToUpper()</span>
+                                </td>
+
+                                <!-- Size -->
+                                <td>@FormatFileSize(doc.FileSizeInBytes)</td>
+
+                                <!-- Uploaded Date -->
+                                <td>@doc.UploadedAt.ToString("MMM dd, yyyy")</td>
+
+                                <!-- OCR STATUS -->
+                                <td>
+                                    @if (doc.OcrStatus == "Completed")
+                                    {
+                                        <span class="badge-status badge-completed">
+                                            <i class="bi bi-check-circle-fill"></i> Completed
+                                        </span>
+                                    }
+                                    else if (doc.OcrStatus == "Failed")
+                                    {
+                                        <span class="badge-status badge-failed">
+                                            <i class="bi bi-x-circle-fill"></i> Failed
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-status badge-pending">
+                                            <i class="bi bi-clock-fill"></i> Pending
+                                        </span>
+                                    }
+                                </td>
+
+                                <!-- NLP STATUS -->
+                                <td>
+                                    @if (doc.NlpStatus == "Completed")
+                                    {
+                                        <span class="badge-status badge-completed">
+                                            <i class="bi bi-check-circle-fill"></i> Completed
+                                        </span>
+                                    }
+                                    else if (doc.NlpStatus == "Failed")
+                                    {
+                                        <span class="badge-status badge-failed">
+                                            <i class="bi bi-x-circle-fill"></i> Failed
+                                        </span>
+                                    }
+                                    else if (doc.NlpStatus == "Skipped")
+                                    {
+                                        <span class="badge-status badge-skipped">
+                                            <i class="bi bi-dash-circle-fill"></i> Skipped
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-status badge-pending">
+                                            <i class="bi bi-clock-fill"></i> Pending
+                                        </span>
+                                    }
+                                </td>
+
+                                <!-- AI TEXT VIEWS -->
+                                <td>
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        @if (!string.IsNullOrWhiteSpace(doc.ExtractedText))
+                                        {
+                                            <a href="/Document/ViewExtractedText/@doc.Id" class="btn-action btn-text">
+                                                <i class="bi bi-file-text"></i> OCR Text
+                                            </a>
+                                        }
+                                        @if (!string.IsNullOrWhiteSpace(doc.ProcessedText))
+                                        {
+                                            <a href="/Document/ViewProcessedText/@doc.Id" class="btn-action btn-text">
+                                                <i class="bi bi-cpu"></i> NLP Text
+                                            </a>
+                                        @if (!string.IsNullOrWhiteSpace(doc.ProcessedText) && doc.NlpStatus == "Completed")
+                                        {
+                                            <a href="/Document/Summarise/@doc.Id" class="btn-action btn-summary">
+                                            <i class="bi bi-file-richtext"></i> Summary
+                                            </a>
+                                            }
+                                        }
+                                    </div>
+                                </td>
+                                
+                               <!-- Description -->
+                                <td>@(doc.Description ?? "—")</td>
+
+                                <!-- Actions -->
+                                <td>
+                                    <div style="display: flex; gap: 8px;">
+                                        <a href="/Document/Details/@doc.Id" class="btn-action btn-view">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                        <a href="/Document/Download/@doc.Id" class="btn-action btn-download">
+                                            <i class="bi bi-download"></i> Download
+                                        </a>
+                                        <form asp-controller="Document" asp-action="Delete" asp-route-id="@doc.Id" method="post" style="margin: 0;" onsubmit="return confirm('Delete this document?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn-action btn-delete">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else if (!string.IsNullOrEmpty(searchQuery))
+            {
+                <!-- ✅ NEW: No Search Results -->
+                <div class="no-results">
+                    <i class="bi bi-search"></i>
+                    <h3>No documents found</h3>
+                    <p>No documents contain "<strong>@searchQuery</strong>" in their content.</p>
+                    <a href="/Document" class="btn-clear" style="margin-top: 1rem;">
+                        <i class="bi bi-arrow-left"></i> Show all documents
+                    </a>
+                </div>
+            }
+            else
+            {
+                <!-- Empty State -->
+                <div class="empty-state">
+                    <i class="bi bi-folder-x"></i>
+                    <h3>No documents yet</h3>
+                    <p>Upload your first document to get started with AI processing!</p>
+                    <a href="/Document/Upload" class="btn-upload" style="margin-top: 1rem;">
+                        <i class="bi bi-cloud-upload"></i> Upload Document
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+</body>
+</html>
+
+@functions {
+    string GetIconClass(string? extension)
+    {
+        return extension?.ToLower() switch
+        {
+            ".pdf" => "icon-pdf",
+            ".docx" or ".doc" => "icon-docx",
+            ".txt" => "icon-txt",
+            ".png" or ".jpg" or ".jpeg" or ".bmp" or ".tiff" => "icon-img",
+            _ => "icon-default"
+        };
+    }
+
+    string GetFileIcon(string? extension)
+    {
+        return extension?.ToLower() switch
+        {
+            ".pdf" => "bi-file-earmark-pdf-fill",
+            ".docx" or ".doc" => "bi-file-earmark-word-fill",
+            ".txt" => "bi-file-earmark-text-fill",
+            ".png" or ".jpg" or ".jpeg" or ".bmp" or ".tiff" => "bi-file-earmark-image-fill",
+            _ => "bi-file-earmark-fill"
+        };
+    }
+
+    string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+}

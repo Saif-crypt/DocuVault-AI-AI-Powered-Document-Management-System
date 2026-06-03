@@ -1,0 +1,447 @@
+@model DocumentManagementApp.Models.Document
+@using DocumentManagementApp.Services
+
+@{
+    ViewData["Title"] = "Document Summary";
+    var result = ViewBag.SummaryResult as SummaryResult;
+    var docName = ViewBag.DocumentName as string ?? Model.FileName;
+    var wordCount = (int)(ViewBag.ProcessedWordCount ?? 0);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DocuVault AI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --ink: #1a1a2e;
+            --paper: #f5f0e8;
+            --accent: #c8953a;
+            --accent-light: #f0d9a8;
+            --soft: #e8e0d0;
+            --muted: #7a7065;
+            --green: #2d6a4f;
+            --green-light: #d8f3dc;
+            --red: #9b2226;
+            --red-light: #fee2e2;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--paper);
+            min-height: 100vh;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--ink);
+        }
+
+        /* ── Page Shell ── */
+        .page-wrap {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem 4rem;
+        }
+
+        /* ── Back Link ── */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover { color: var(--ink); }
+
+        /* ── Header ── */
+        .page-header {
+            border-left: 4px solid var(--accent);
+            padding-left: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .page-header .label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2rem;
+            color: var(--ink);
+            line-height: 1.2;
+        }
+
+        .page-header .doc-name {
+            margin-top: 0.4rem;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        /* ── Stats Row ── */
+        .stats-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: white;
+            border: 1px solid var(--soft);
+            border-radius: 100px;
+            padding: 8px 18px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .stat-pill i { color: var(--accent); }
+
+        /* ── Summary Card ── */
+        .summary-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--soft);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+        }
+
+        .summary-card-header {
+            background: var(--ink);
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .summary-card-header i { color: var(--accent); font-size: 1.1rem; }
+
+        .summary-card-body { padding: 1.75rem; }
+
+        /* ── Summary Sentences ── */
+        .sentence-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .sentence-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .sentence-num {
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            background: var(--accent-light);
+            color: var(--accent);
+            border-radius: 50%;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+        }
+
+        .sentence-text {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: var(--ink);
+        }
+
+        /* ── Keywords Section ── */
+        .keywords-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--soft);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--muted);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i { color: var(--accent); }
+
+        .keywords-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .keyword-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid var(--soft);
+            background: var(--paper);
+            color: var(--ink);
+            transition: all 0.2s;
+        }
+
+        .keyword-bar {
+            height: 4px;
+            border-radius: 2px;
+            background: var(--accent);
+            display: inline-block;
+        }
+
+        /* ── How It Works ── */
+        .explainer-card {
+            background: #f0f7f4;
+            border: 1px solid #b7e4c7;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .explainer-card .section-title { color: var(--green); }
+        .explainer-card .section-title i { color: var(--green); }
+
+        .steps-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #1b4332;
+        }
+
+        .step-badge {
+            background: var(--green);
+            color: white;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            min-width: 32px;
+            text-align: center;
+            margin-top: 1px;
+        }
+
+        /* ── Error State ── */
+        .error-card {
+            background: var(--red-light);
+            border: 1px solid #fca5a5;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .error-card i { font-size: 2.5rem; color: var(--red); margin-bottom: 0.75rem; }
+        .error-card h3 { color: var(--red); font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .error-card p { color: #7f1d1d; font-size: 0.9rem; }
+
+        /* ── Note Banner ── */
+        .note-banner {
+            background: var(--accent-light);
+            border: 1px solid #d4a843;
+            border-radius: 10px;
+            padding: 0.9rem 1.2rem;
+            font-size: 0.85rem;
+            color: #7a5c1e;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .note-banner i { color: var(--accent); margin-top: 1px; }
+
+        @@media (max-width: 600px) {
+            .stats-row { flex-direction: column; }
+            .page-header h1 { font-size: 1.5rem; }
+            .sentence-text { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-wrap">
+
+        <!-- Back Link -->
+        <a href="/Document" class="back-link">
+            <i class="bi bi-arrow-left"></i> Back to My Documents
+        </a>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="label"><i class="bi bi-stars"></i> &nbsp;Extractive AI Summary</div>
+            <h1>Document Summary</h1>
+            <div class="doc-name"><i class="bi bi-file-earmark-text"></i> @docName</div>
+        </div>
+
+        <!-- Note Banner -->
+        <div class="note-banner">
+            <i class="bi bi-info-circle-fill"></i>
+            <span>
+                <strong>Extractive Summary:</strong> This summary selects the most important content 
+                directly from the NLP-processed text. No new text is generated — 
+                no hallucination is possible.
+            </span>
+        </div>
+
+        @if (result != null && result.Success)
+        {
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <div class="stat-pill">
+                    <i class="bi bi-collection"></i>
+                    @wordCount tokens analysed
+                </div>
+                <div class="stat-pill">
+                    <i class="bi bi-layout-text-sidebar"></i>
+                    @result.TotalChunks chunks scored
+                </div>
+                <div class="stat-pill">
+                    <i class="bi bi-check2-square"></i>
+                    @result.SelectedChunks selected
+                </div>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="summary-card">
+                <div class="summary-card-header">
+                    <i class="bi bi-file-richtext"></i>
+                    Summary
+                </div>
+                <div class="summary-card-body">
+                    @if (result.Sentences != null && result.Sentences.Length > 0)
+                    {
+                        <ul class="sentence-list">
+                            @for (int i = 0; i < result.Sentences.Length; i++)
+                            {
+                                <li class="sentence-item">
+                                    <span class="sentence-num">@(i + 1)</span>
+                                    <span class="sentence-text">@result.Sentences[i]</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p style="color: var(--muted);">@result.Summary</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Top Keywords -->
+            @if (result.TopKeywords != null && result.TopKeywords.Length > 0)
+            {
+                <div class="keywords-card">
+                    <div class="section-title">
+                        <i class="bi bi-tags-fill"></i>
+                        Top Keywords (by frequency score)
+                    </div>
+                    <div class="keywords-grid">
+                        @foreach (var kw in result.TopKeywords)
+                        {
+                            var barWidth = (int)(kw.Score * 40);
+                            <span class="keyword-tag">
+                                @kw.Word
+                                <span class="keyword-bar" style="width: @(barWidth)px;"></span>
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- How It Works Explainer -->
+            <div class="explainer-card">
+                <div class="section-title">
+                    <i class="bi bi-gear-fill"></i>
+                    How This Summary Was Generated
+                </div>
+                <ul class="steps-list">
+                    <li class="step-item">
+                        <span class="step-badge">1</span>
+                        <span>Used <strong>ProcessedText</strong> — NLP-cleaned, lemmatized tokens from your document.</span>
+                    </li>
+                    <li class="step-item">
+                        <span class="step-badge">2</span>
+                        <span>Split text into <strong>@result.TotalChunks chunks</strong> of ~15 words each.</span>
+                    </li>
+                    <li class="step-item">
+                        <span class="step-badge">3</span>
+                        <span>Computed <strong>Term Frequency (TF)</strong> — counted how often each word appears and normalized by the maximum count.</span>
+                    </li>
+                    <li class="step-item">
+                        <span class="step-badge">4</span>
+                        <span>Scored each chunk by summing the TF scores of its words, then dividing by chunk length to prevent bias toward longer chunks.</span>
+                    </li>
+                    <li class="step-item">
+                        <span class="step-badge">5</span>
+                        <span>Selected the <strong>top @result.SelectedChunks highest-scoring chunks</strong> and restored their original reading order.</span>
+                    </li>
+                </ul>
+                <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #b7e4c7; font-size: 0.82rem; color: #2d6a4f;">
+                    <i class="bi bi-shield-check"></i>
+                    &nbsp;<strong>@result.Explanation</strong>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Error State -->
+            <div class="error-card">
+                <div><i class="bi bi-exclamation-triangle-fill"></i></div>
+                <h3>Summary Unavailable</h3>
+                <p>@(result?.ErrorMessage ?? "An unexpected error occurred during summarisation.")</p>
+                <a href="/Document" style="display:inline-block; margin-top:1rem; color: var(--red); font-weight:600; text-decoration:none;">
+                    <i class="bi bi-arrow-left"></i> Return to Documents
+                </a>
+            </div>
+        }
+
+    </div>
+
+</body>
+</html>

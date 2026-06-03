@@ -1,0 +1,101 @@
+@model DocumentManagementApp.Models.Document
+
+@{
+    ViewData["Title"] = "Document Details";
+}
+
+<div class="container" style="max-width: 720px; margin: 0 auto; padding: 0 20px;">
+
+    <!-- Page Header -->
+    <div class="doc-page-header">
+        <h2><i class="bi bi-file-earmark-text"></i> Document Details</h2>
+        <a href="/Document/Index" class="btn-cancel">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <!-- Details Card -->
+    <div class="details-card">
+
+        <!-- Card Header -->
+        <div class="details-card-header">
+            <div class="details-card-header-icon">
+                <i class="bi @GetFileIcon(Model.FileExtension ?? "")"></i>
+            </div>
+            <div>
+                <h2>@Model.FileName</h2>
+                <p>@(string.IsNullOrEmpty(Model.Description) ? "No description provided" : Model.Description)</p>
+            </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="details-card-body">
+
+            <div class="details-row">
+                <span class="details-label">File Name</span>
+                <span class="details-value">@Model.FileName</span>
+            </div>
+
+            <div class="details-row">
+                <span class="details-label">File Type</span>
+                <span class="details-value"><span class="badge-ext">@Model.FileExtension</span></span>
+            </div>
+
+            <div class="details-row">
+                <span class="details-label">File Size</span>
+                <span class="details-value">@FormatFileSize(Model.FileSizeInBytes)</span>
+            </div>
+
+            <div class="details-row">
+                <span class="details-label">Uploaded On</span>
+                <span class="details-value">@Model.UploadedAt.ToString("MMMM dd, yyyy 'at' hh:mm tt")</span>
+            </div>
+
+            <div class="details-row">
+                <span class="details-label">Uploaded By</span>
+                <span class="details-value">@Model.User?.Email</span>
+            </div>
+
+            <div class="details-row">
+                <span class="details-label">Email</span>
+                <span class="details-value" style="color: var(--clr-primary-light);">@Model.User?.Email</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="details-actions">
+                <a href="/Document/Download/@Model.Id" class="btn-action btn-action-download" style="padding: 9px 22px; font-size: 0.85rem;">
+                    <i class="bi bi-download"></i> Download File
+                </a>
+                <a href="/Document/Index" class="btn-cancel">
+                    <i class="bi bi-arrow-left"></i> Back to Documents
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1) { order++; len /= 1024; }
+        return $"{len:0.##} {sizes[order]}";
+    }
+
+    string GetFileIcon(string ext)
+    {
+        return ext?.ToLower() switch
+        {
+            ".pdf"  => "bi-filetype-pdf",
+            ".doc"  => "bi-file-word",
+            ".docx" => "bi-file-word",
+            ".txt"  => "bi-file-text",
+            ".jpg"  => "bi-file-image",
+            ".jpeg" => "bi-file-image",
+            ".png"  => "bi-file-image",
+            _       => "bi-file-earmark"
+        };
+    }
+}
