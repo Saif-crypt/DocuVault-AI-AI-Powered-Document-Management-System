@@ -1,0 +1,383 @@
+@model DocumentManagementApp.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "_Layout";
+}
+
+<style>
+    .auth-page-wrapper {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        background-image: url('/images/login-bg.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+
+    .auth-card {
+        background: var(--clr-bg-light);
+        border: 1px solid var(--clr-border);
+        border-radius: 16px;
+        padding: 40px;
+        width: 100%;
+        max-width: 440px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+    .auth-card-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .auth-card-icon {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, var(--clr-primary), var(--clr-accent));
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: var(--clr-white);
+        font-size: 1.8rem;
+    }
+
+    .auth-card-header h2 {
+        color: var(--clr-text) !important;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .auth-card-header p {
+        color: var(--clr-text-muted) !important;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .auth-form {
+        margin-top: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--clr-text) !important;
+        font-weight: 500;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-wrapper .input-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--clr-text-muted);
+        font-size: 1.1rem;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 14px 16px 14px 48px;
+        background: var(--clr-bg-dark);
+        border: 1px solid var(--clr-border);
+        border-radius: 10px;
+        color: var(--clr-text) !important;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.95rem;
+        transition: all 0.3s;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: var(--clr-primary);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .form-group input::placeholder {
+        color: var(--clr-text-muted);
+    }
+
+    .btn-auth-submit {
+        width: 100%;
+        padding: 15px;
+        background: var(--clr-primary);
+        color: var(--clr-white) !important;
+        border: none;
+        border-radius: 10px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .btn-auth-submit:hover {
+        background: var(--clr-primary-light);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--clr-border);
+        color: var(--clr-text-muted);
+        font-size: 0.9rem;
+    }
+
+    .auth-footer a {
+        color: var(--clr-primary-light) !important;
+        text-decoration: none;
+        font-weight: 600;
+        margin-left: 5px;
+    }
+
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+
+    .validation-summary-errors {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        color: #f87171 !important;
+        font-size: 0.9rem;
+    }
+
+    .validation-summary-errors ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+    }
+
+    .text-danger {
+        color: #f87171 !important;
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    /* Password strength indicator */
+    .password-strength {
+        margin-top: 5px;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .strength-bar {
+        flex: 1;
+        height: 4px;
+        background: var(--clr-border);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .strength-fill {
+        height: 100%;
+        width: 0%;
+        background: #ef4444;
+        transition: width 0.3s, background 0.3s;
+    }
+
+    /* Dark mode compatibility */
+    @@media (prefers-color-scheme: dark) {
+        .auth-card {
+            background: rgba(30, 41, 59, 0.9);
+        }
+        
+        .form-group input {
+            background: rgba(15, 23, 42, 0.8);
+        }
+    }
+</style>
+
+<div class="auth-page-wrapper">
+    <div class="auth-card">
+
+        <!-- Header -->
+        <div class="auth-card-header">
+            <div class="auth-card-icon">
+                <i class="bi bi-person-plus"></i>
+            </div>
+            <h2>Create Account</h2>
+            <p>Join DocuVault and manage your documents smartly</p>
+        </div>
+
+        <!-- Form -->
+        <form asp-action="Register" method="post" class="auth-form">
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+            <div class="form-group">
+                <label asp-for="FullName">Full Name</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-person input-icon"></i>
+                    <input asp-for="FullName" type="text" placeholder="John Doe" />
+                </div>
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email">Email Address</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-envelope input-icon"></i>
+                    <input asp-for="Email" type="email" placeholder="you@example.com" />
+                </div>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password">Password</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-lock input-icon"></i>
+                    <input asp-for="Password" type="password" placeholder="Min 6 characters" id="passwordInput" />
+                </div>
+                <div class="password-strength">
+                    <span>Strength:</span>
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                </div>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ConfirmPassword">Confirm Password</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-shield-lock input-icon"></i>
+                    <input asp-for="ConfirmPassword" type="password" placeholder="Re-enter password" id="confirmPasswordInput" />
+                </div>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                <span class="text-danger" id="passwordMatchError" style="display: none;">Passwords do not match</span>
+            </div>
+
+            <button type="submit" class="btn-auth-submit" id="submitBtn">Create Account</button>
+        </form>
+
+        <!-- Footer -->
+        <div class="auth-footer">
+            Already have an account? <a asp-action="Login">Sign in</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Password strength indicator
+        const passwordInput = document.getElementById('passwordInput');
+        const strengthFill = document.getElementById('strengthFill');
+        const confirmPasswordInput = document.getElementById('confirmPasswordInput');
+        const passwordMatchError = document.getElementById('passwordMatchError');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            
+            // Length check
+            if (password.length >= 8) strength += 25;
+            if (password.length >= 12) strength += 10;
+            
+            // Complexity checks
+            if (/[A-Z]/.test(password)) strength += 25;
+            if (/[a-z]/.test(password)) strength += 20;
+            if (/[0-9]/.test(password)) strength += 15;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 15;
+            
+            // Update visual indicator
+            strengthFill.style.width = Math.min(strength, 100) + '%';
+            
+            // Color coding
+            if (strength < 50) {
+                strengthFill.style.background = '#ef4444'; // Red
+            } else if (strength < 75) {
+                strengthFill.style.background = '#f59e0b'; // Amber
+            } else {
+                strengthFill.style.background = '#10b981'; // Green
+            }
+        }
+        
+        function checkPasswordMatch() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            
+            if (confirmPassword === '') {
+                passwordMatchError.style.display = 'none';
+                return true;
+            }
+            
+            if (password !== confirmPassword) {
+                passwordMatchError.style.display = 'block';
+                return false;
+            } else {
+                passwordMatchError.style.display = 'none';
+                return true;
+            }
+        }
+        
+        function validateForm() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long');
+                passwordInput.focus();
+                return false;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                confirmPasswordInput.focus();
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Event listeners
+        passwordInput.addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+            checkPasswordMatch();
+        });
+        
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+        
+        // Form submission validation
+        document.querySelector('.auth-form').addEventListener('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Add loading state to button
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Creating Account...';
+            submitBtn.disabled = true;
+            return true;
+        });
+        
+        // Focus first input field
+        document.querySelector('input[type="text"]')?.focus();
+    </script>
+}

@@ -1,0 +1,226 @@
+@model DocumentManagementApp.Models.ProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<style>
+    :root {
+        --clr-primary: #4F46E5;
+        --clr-primary-dark: #4338CA;
+        --clr-accent: #06B6D4;
+        --clr-bg-dark: #0f172a;
+        --clr-bg-light: #1e293b;
+        --clr-white: #ffffff;
+        --clr-text-muted: #94a3b8;
+        --clr-border: #334155;
+    }
+
+    body {
+        background: linear-gradient(135deg, var(--clr-bg-dark) 0%, #1a1f35 100%);
+        min-height: 100vh;
+        color: var(--clr-white);
+    }
+
+    .profile-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .profile-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--clr-white);
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-header p {
+        font-size: 1.1rem;
+        color: var(--clr-text-muted);
+    }
+
+    .profile-content {
+        display: grid;
+        gap: 2rem;
+    }
+
+    .profile-card {
+        background: var(--clr-bg-light);
+        border: 1px solid var(--clr-border);
+        border-radius: 12px;
+        padding: 2rem;
+    }
+
+    .profile-card h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--clr-white);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .profile-card h2 i {
+        font-size: 1.8rem;
+        color: var(--clr-primary);
+    }
+
+    .profile-info-grid {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .info-label {
+        font-size: 0.9rem;
+        color: var(--clr-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        color: var(--clr-white);
+        font-weight: 500;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1.5rem;
+        background: var(--clr-bg-dark);
+        border: 1px solid var(--clr-border);
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+
+    .stat-item:hover {
+        border-color: var(--clr-primary);
+        transform: translateY(-3px);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--clr-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--clr-text-muted);
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--clr-primary);
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 2rem;
+        padding: 12px 24px;
+        border: 2px solid var(--clr-primary);
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+
+    .back-link:hover {
+        background: var(--clr-primary);
+        color: white;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="profile-container">
+    <!-- Header -->
+    <div class="profile-header">
+        <h1>👤 My Profile</h1>
+        <p>View your account information and AI usage statistics</p>
+    </div>
+
+    <!-- Profile Content -->
+    <div class="profile-content">
+        
+        <!-- User Information Card -->
+        <div class="profile-card">
+            <h2>
+                <i class="bi bi-person-circle"></i>
+                User Information
+            </h2>
+            
+            <div class="profile-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Full Name</span>
+                    <span class="info-value">@Model.UserName</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Email Address</span>
+                    <span class="info-value">@Model.Email</span>
+                </div>
+                
+                @if (Model.AccountCreatedDate.HasValue)
+                {
+                    <div class="info-item">
+                        <span class="info-label">Member Since</span>
+                        <span class="info-value">@Model.AccountCreatedDate.Value.ToString("MMMM dd, yyyy")</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- AI Usage Statistics Card -->
+        <div class="profile-card">
+            <h2>
+                <i class="bi bi-graph-up"></i>
+                AI Usage Statistics
+            </h2>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">@Model.TotalDocuments</div>
+                    <div class="stat-label">Documents Uploaded</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-number">@Model.OcrProcessed</div>
+                    <div class="stat-label">OCR Processed</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-number">@Model.NlpProcessed</div>
+                    <div class="stat-label">NLP Processed</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-number">@Model.SummariesGenerated</div>
+                    <div class="stat-label">Summaries Generated</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Dashboard -->
+    <a href="/Home/Dashboard" class="back-link">
+        <i class="bi bi-arrow-left"></i>
+        Back to Dashboard
+    </a>
+</div>
